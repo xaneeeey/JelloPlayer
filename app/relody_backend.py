@@ -2,7 +2,7 @@ import re
 import requests
 
 
-class JelloBackend:
+class RelodyBackend:
     CHANNELS = {
         "Trap Nation": "UCa10nxShhzNrCE1o2ZOPztg",
         "Electro Posé": "UCpO0OSNAFLRUpGrNz-bJJHA",

@@ -16,7 +16,6 @@ const CloseIcon = () => (
 const QueuePanel = ({
     queue,
     queueIndex,
-    currentSong,
     onClose,
     onPlayFromQueue,
     onRemoveFromQueue,

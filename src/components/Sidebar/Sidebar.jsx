@@ -119,7 +119,10 @@ const Sidebar = ({
         try {
             const song = JSON.parse(e.dataTransfer.getData('application/json'));
             onDropOnPlaylist(playlistId, song);
-        } catch {}
+        } catch (err) {
+            // ignore invalid drop payload
+            console.warn('Unable to parse dropped data', err);
+        }
     };
 
     const isFav = (channelId) => favouriteChannels.some((c) => c.id === channelId);
@@ -128,7 +131,7 @@ const Sidebar = ({
     return (
         <div className="sidebar">
             <div className="sidebar-brand">
-                <span className="brand-jello" onClick={onHome} title="Home">Jello</span>
+                <span className="brand-relody" onClick={onHome} title="Home">Relody</span>
                 <span className="brand-music"> music</span>
             </div>
 

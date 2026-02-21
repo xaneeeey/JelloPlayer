@@ -67,7 +67,7 @@ const MainContent = ({
             <div className="main-content">
                 {songs.length === 0 ? (
                     <div className="home-view">
-                        <span className="home-logo">Jello</span>
+                        <span className="home-logo">Relody</span>
                         <p className="home-subtitle">Loading...</p>
                     </div>
                 ) : (

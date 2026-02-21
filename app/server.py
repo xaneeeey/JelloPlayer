@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, Response, stream_with_context, request
 from flask_cors import CORS
-from jello_backend import JelloBackend
+from relody_backend import RelodyBackend
 import os
 import subprocess
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ if not API_KEY:
     print("Warning: YOUTUBE_API_KEY not found in environment variables.")
 
 
-backend = JelloBackend(API_KEY)
+backend = RelodyBackend(API_KEY)
 
 
 @app.route("/api/channels", methods=["GET"])

@@ -48,6 +48,12 @@ const PlayerBar = ({
 
     if (!currentSong) return null;
 
+    // clamp progress defensively before using it in a style
+    const safeProgress =
+        Number.isFinite(progress) && progress >= 0
+            ? Math.min(progress, 100)
+            : 0;
+
     const isMuted = volume === 0;
 
     const handleMuteToggle = () => {
@@ -71,7 +77,10 @@ const PlayerBar = ({
 
             {/* Thin progress line at the very top */}
             <div className="player-progress-line">
-                <div className="player-progress-fill" style={{ width: `${progress}%` }} />
+                <div
+                    className="player-progress-fill"
+                    style={{ width: `${safeProgress}%` }}
+                />
             </div>
 
             <div className="player-inner">

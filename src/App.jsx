@@ -1,10 +1,29 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
+
+// Helper to load a value with backward compatibility from legacy key
+const loadStorage = (newKey, oldKey) => {
+  try {
+    const stored = localStorage.getItem(newKey);
+    if (stored) return JSON.parse(stored);
+    if (oldKey) {
+      const oldStored = localStorage.getItem(oldKey);
+      if (oldStored) {
+        const parsed = JSON.parse(oldStored);
+        localStorage.setItem(newKey, JSON.stringify(parsed));
+        localStorage.removeItem(oldKey);
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn(`Failed to load storage key "${newKey}"`, e);
+  }
+  return [];
+};
 import Sidebar from './components/Sidebar/Sidebar';
 import MainContent from './components/MainContent/MainContent';
 import PlayerBar from './components/PlayerBar/PlayerBar';
 import QueuePanel from './components/QueuePanel/QueuePanel';
-import ChessEasterEgg from './components/ChessEasterEgg/ChessEasterEgg';
 import './index.css';
 
 const API_BASE_URL = 'http://127.0.0.1:5000/api';
@@ -69,16 +88,10 @@ function App() {
   const [showQueuePanel, setShowQueuePanel] = useState(false);
 
   // ── Playlists (localStorage) ──────────────────────────────────────────────
-  const [playlists, setPlaylists] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('jello-playlists') || '[]'); }
-    catch { return []; }
-  });
+  const [playlists, setPlaylists] = useState(() => loadStorage('relody-playlists', 'jello-playlists'));
 
   // ── Favourite channels (localStorage) ────────────────────────────────────
-  const [favouriteChannels, setFavouriteChannels] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('jello-favourites') || '[]'); }
-    catch { return []; }
-  });
+  const [favouriteChannels, setFavouriteChannels] = useState(() => loadStorage('relody-favourites', 'jello-favourites'));
 
   // ── Refs ──────────────────────────────────────────────────────────────────
   const audioRef = useRef(null);
@@ -114,12 +127,12 @@ function App() {
 
   // Persist playlists to localStorage
   useEffect(() => {
-    localStorage.setItem('jello-playlists', JSON.stringify(playlists));
+    localStorage.setItem('relody-playlists', JSON.stringify(playlists));
   }, [playlists]);
 
   // Persist favourite channels to localStorage
   useEffect(() => {
-    localStorage.setItem('jello-favourites', JSON.stringify(favouriteChannels));
+    localStorage.setItem('relody-favourites', JSON.stringify(favouriteChannels));
   }, [favouriteChannels]);
 
   // ── Visualiser ────────────────────────────────────────────────────────────
@@ -300,11 +313,14 @@ function App() {
   useEffect(() => {
     const audio = audioRef.current;
     const updateProgress = () => {
-      if (audio.duration) {
-        setProgress((audio.currentTime / audio.duration) * 100);
-        setCurrentTime(formatTime(audio.currentTime));
-        setDuration(formatTime(audio.duration || 0));
-      }
+      // sanitize duration value before using it
+      const durationValue = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const progressValue = durationValue > 0
+        ? (audio.currentTime / durationValue) * 100
+        : 0;
+      setProgress(progressValue);
+      setCurrentTime(formatTime(audio.currentTime));
+      setDuration(formatTime(durationValue));
     };
     audio.addEventListener('timeupdate', updateProgress);
     audio.addEventListener('ended', handleNext);
@@ -329,7 +345,8 @@ function App() {
     }
   }, [currentSong, isPlaying]);
 
-  useEffect(() => { audioRef.current.volume = volume; }, []);
+  // sync audio element volume whenever `volume` changes
+  useEffect(() => { audioRef.current.volume = volume; }, [volume]);
 
   const handlePlaySong = (song) => {
     if (currentSong?.id === song.id) {
@@ -466,11 +483,12 @@ function App() {
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
-  const formatTime = (seconds) => {
-    if (!seconds) return '0:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  const formatTime = (time) => {
+    // guard against NaN/Infinity/negative values
+    if (!Number.isFinite(time) || time < 0) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
   };
 
   const currentMode = activePlaylist ? 'playlist' : activeChannel ? 'channel' : 'home';

@@ -10,7 +10,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 echo "Starting backend..."
-python3 "Python Backend/server.py" &
+python3 "app/server.py" &
 BACKEND_PID=$!
 
 echo "Starting frontend..."
