@@ -1,4 +1,4 @@
-# Jello
+# Relody
 
 A music streaming web app that streams audio from YouTube channels directly in your browser. Browse channels, discover trending music, build playlists, and listen — no accounts, no ads, just audio.
 
@@ -40,51 +40,6 @@ A music streaming web app that streams audio from YouTube channels directly in y
 
 ---
 
-## Project Structure
-
-```
-Jellov2/
-├── index.html
-├── package.json
-├── vite.config.js
-├── start.sh
-│
-├── src/
-│   ├── App.jsx                     # Root component — all app state + audio engine
-│   ├── main.jsx
-│   ├── index.css                   # Global styles, CSS variables, dark theme
-│   └── components/
-│       ├── Sidebar/
-│       │   ├── Sidebar.jsx         # Channel search, favorites, playlists, now-playing
-│       │   └── Sidebar.css
-│       ├── MainContent/
-│       │   ├── MainContent.jsx     # Header, song search bar, album grid wrapper
-│       │   └── MainContent.css
-│       ├── AlbumGrid/
-│       │   ├── AlbumGrid.jsx       # Responsive CSS grid
-│       │   └── AlbumGrid.css
-│       ├── AlbumCard/
-│       │   ├── AlbumCard.jsx       # Song card — draggable, overlay buttons
-│       │   └── AlbumCard.css
-│       ├── PlayerBar/
-│       │   ├── PlayerBar.jsx       # Playback controls, progress, volume
-│       │   └── PlayerBar.css
-│       ├── QueuePanel/
-│       │   ├── QueuePanel.jsx      # Fixed queue overlay panel
-│       │   └── QueuePanel.css
-│       └── ChessEasterEgg/
-│           ├── ChessEasterEgg.jsx
-│           └── ChessEasterEgg.css
-│
-└── Python Backend/
-    ├── server.py                   # Flask app — all API routes
-    ├── jello_backend.py            # YouTube Data API v3 integration
-    ├── main.py                     # Legacy CLI interface (unused by web app)
-    └── .env                        # YOUTUBE_API_KEY (not committed)
-```
-
----
-
 ## Prerequisites
 
 - **Node.js** 18+
@@ -107,8 +62,8 @@ brew install yt-dlp
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/Jellov2.git
-cd Jellov2
+git clone https://github.com/your-username/Relody.git
+cd Relody
 ```
 
 ### 2. Install frontend dependencies
@@ -133,17 +88,8 @@ YOUTUBE_API_KEY=your_api_key_here
 
 ### 5. Start both servers
 
-**Terminal 1 — Frontend (Vite dev server on port 5173):**
-
 ```bash
-npm run dev
-```
-
-**Terminal 2 — Backend (Flask on port 5000):**
-
-```bash
-cd "Python Backend"
-python server.py
+./start.sh
 ```
 
 Then open [http://localhost:5173](http://localhost:5173) in your browser.
@@ -205,8 +151,8 @@ Any video matching these criteria is removed from all results — uploads, searc
 
 Both are serialized to `localStorage`:
 
-- `jello-playlists` — array of `{ id, name, songs[] }` objects
-- `jello-favourites` — array of channel objects
+- `relody-playlists` — array of `{ id, name, songs[] }` objects
+- `relody-favourites` — array of channel objects
 
 Songs are added to playlists by dragging a card from the grid and dropping it on a playlist item in the sidebar.
 
